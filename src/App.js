@@ -74,7 +74,7 @@ function App() {
           />
         </div>
         {error && <p className="text-danger">{error}</p>}
-        <button type="submit" data-testid="my-button" className="btn btn-primary" onClick={handleClick}>
+        <button type="submit"  data-testid="custom-element" className="btn btn-primary" onClick={handleClick}>
           Submit
         </button>
       </form>

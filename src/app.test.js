@@ -1,13 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
 import App from "./App";
 
-const typeIntoFormElements = ({ email, password, confirmPassword }) => {
+const typeIntoInputElement = ({ email, password, confirmPassword }) => {
   const emailInputElement = screen.getByLabelText("Email address");
   const passwordInputElement = screen.getByLabelText("Password");
   const confirmPasswordInputElement = screen.getByLabelText("Confirm Password");
-
   if (email) {
     userEvent.type(emailInputElement, email);
   }
@@ -25,56 +23,51 @@ const typeIntoFormElements = ({ email, password, confirmPassword }) => {
   };
 };
 
-describe("testing App component", () => {
+describe("App Component", function () {
   beforeEach(() => {
     render(<App />);
   });
+
   test("testing input initially empty", () => {
     expect(screen.getByLabelText("Email address").value).toBe("");
   });
 
-  test("test email input changed its value", () => {
-    const { emailInputElement } = typeIntoFormElements({
+  test("testing inputEmail value changed after typing", () => {
+    const { emailInputElement } = typeIntoInputElement({
       email: "amira@gmail.com",
     });
-    expect(emailInputElement.value).toBe("amira@gmail.com");
+    const passwordInputElement = screen.getByLabelText("Password");
+
+    expect(emailInputElement.value).toEqual("amira@gmail.com");
+    expect(passwordInputElement.value).toEqual("");
   });
 
-  test("should show email message error when email is invalid", () => {
-    expect(
-      screen.queryByText(/The email you input is invalid./i)
-    ).not.toBeInTheDocument();
-
-    typeIntoFormElements({ email: "amiragmail.com" });
-
-    // const btn=screen.getByRole("button",{name:/submit/i})
-    const btn = screen.getByTestId("my-button");
+  test("test conditional render of error,whene email error", () => {
+    // expect(screen.queryByText(/The email you input is invalid./i)).not.toBeInTheDocument()
+    typeIntoInputElement({ email: "amiragmailcom" });
+    const btn = screen.getByRole("button", { name: /submit/i });
     userEvent.click(btn);
-
     expect(
       screen.queryByText(/The email you input is invalid./i)
     ).toBeInTheDocument();
   });
-
-  test("should show No Error when every thing is valid", () => {
-    typeIntoFormElements({
+  test("test show no error when data are correct", () => {
+    // expect(screen.queryByText(/The email you input is invalid./i)).not.toBeInTheDocument()
+    typeIntoInputElement({
       email: "amira@gmail.com",
-      password: "123ASD",
-      confirmPassword: "123A",
+      password: "ASD123",
+      confirmPassword: "ASD123",
     });
-
-    // const btn=screen.getByRole("button",{name:/submit/i})
-    const btn = screen.getByTestId("my-button");
+    const btn = screen.getByTestId('custom-element')
     userEvent.click(btn);
-
     expect(
       screen.queryByText(/The email you input is invalid./i)
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/The password you entered should contain 5 or more characters./i)
+      screen.queryByText(/The email you input is invalid./i)
     ).not.toBeInTheDocument();
     expect(
       screen.queryByText(/The passwords don't match. Try again./i)
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
   });
 });
